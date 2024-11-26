@@ -32,7 +32,7 @@ importers:
         version: 4.3.3(vite@5.4.11)
       typescript:
         specifier: ^5.6.2
-        version: 5.6.3
+        version: 5.7.2
       vite:
         specifier: ^5.4.8
         version: 5.4.11
@@ -619,8 +619,8 @@ packages:
     resolution: {integrity: sha512-/OaKK0xYrs3DmxRYqL/yDc+FxFUVYhDlXMhRmv3z915w2HF1tnN1omB354j8VUGO/hbRzyD6Y3sA7v7GS/ceog==}
     engines: {node: '>=4'}
 
-  typescript@5.6.3:
-    resolution: {integrity: sha512-hjcS1mhfuyi4WW8IWtjP7brDrG2cuDZukyrYrSauoXGNgx0S7zceP07adYkJycEr56BOUTNPzbInooiN3fn1qw==}
+  typescript@5.7.2:
+    resolution: {integrity: sha512-i5t66RHxDvVN40HfDd1PsEThGNnlMCMT3jMUuoh9/0TaqWevNontacunWyN02LA9/fIbEWlcHZcgTKb9QoaLfg==}
     engines: {node: '>=14.17'}
     hasBin: true
 
@@ -1177,7 +1177,7 @@ snapshots:
 
   to-fast-properties@2.0.0: {}
 
-  typescript@5.6.3: {}
+  typescript@5.7.2: {}
 
   update-browserslist-db@1.1.1(browserslist@4.24.0):
     dependencies:
