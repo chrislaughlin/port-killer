@@ -1,3 +1,5 @@
+#![allow(deprecated)]
+
 use std::ffi::CString;
 
 use tauri::{AppHandle, Emitter, Listener, Manager, WebviewWindow};
