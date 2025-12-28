@@ -11,7 +11,8 @@ fn main() {
     tauri::Builder::default()
         .invoke_handler(tauri::generate_handler![
             command::init,
-            command::show_menubar_panel
+            command::show_menubar_panel,
+            command::greet
         ])
         .plugin(tauri_nspanel::init())
         .setup(|app| {
