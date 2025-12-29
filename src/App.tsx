@@ -3,8 +3,12 @@ import { invoke } from "@tauri-apps/api/core";
 
 import "./App.css";
 
-import mockInvokes from './mockInvokes';
-import { Button, List, ListItem } from '@mui/material';
+import mockInvokes from "./mockInvokes";
+import { Box, IconButton, List, ListItem, Typography } from "@mui/material";
+import TerminalIcon from "@mui/icons-material/Terminal";
+import WebIcon from "@mui/icons-material/Web";
+import ElectricalServicesIcon from "@mui/icons-material/ElectricalServices";
+import DangerousIcon from "@mui/icons-material/Dangerous";
 
 export interface ProcessInfo {
   pid: number;
@@ -21,19 +25,7 @@ function invokeWrapper<T>(name: string): Promise<T> {
 }
 
 function App() {
-  const [greeting, setGreeting] = useState<ProcessInfo[]>([]);
-  const [openedDataTime, setOpenedDataTime] = useState<number | null>(null);
-  const [visibleLog, setVisibleLog] = useState<boolean[]>([]);
-
-  useEffect(() => {
-    const handle = () => {
-      setOpenedDataTime(new Date().getTime());
-    };
-    handle();
-    return () => {
-      handle();
-    };
-  }, []);
+  const [runningPorts, setRunningPorts] = useState<ProcessInfo[]>([]);
 
   useEffect(() => {
     invokeWrapper("init");
@@ -41,44 +33,106 @@ function App() {
 
   useEffect(() => {
     const onVisibilityChange = () => {
-      setVisibleLog((prev) => [...prev, !document.hidden]);
+      console.log(document.hidden ? "hidden" : "visible");
+      if (!document.hidden) {
+        fetchRunningPorts();
+      }
     };
     document.addEventListener("visibilitychange", onVisibilityChange);
     return () => {
       document.removeEventListener("visibilitychange", onVisibilityChange);
     };
-  }, [])
+  }, []);
 
-  async function fetchGreeting() {
-    const response:ProcessInfo[] = await invokeWrapper("greet");
-    setGreeting(response);
+  async function fetchRunningPorts() {
+    const response: ProcessInfo[] = await invokeWrapper("get_running_ports");
+    setRunningPorts(response);
   }
 
   return (
     <div className="container">
-      <h1>Menubar App</h1>
-      <span>Width: {window.outerWidth}</span>
-      <br />
-      <span>Height: {window.outerHeight}</span>
-      <br />
-      {/* <ul>
-        {visibleLog.map((visible, index) => (
-          <li key={index}>
-            {visible ? "visible" : "hidden"}
-          </li>
-        ))}
-      </ul> */}
-      <Button variant="contained" onClick={fetchGreeting}>Greet</Button>
-      <List>
-        {greeting.map((process, index) => (
-          <ListItem key={index}>
-            PID: {process.pid}, Port: {process.port}, Command: {process.command}
-          </ListItem>
-        ))}
+      <h2>Process Killer</h2>
+      <List
+        disablePadding
+        sx={{
+          width: "100%",
+          display: "flex",
+          flexDirection: "column",
+          gap: 0.5,
+        }}
+      >
+        {runningPorts
+          .sort((a, b) => a.port - b.port)
+          .map((process, index) => (
+            <ListItem
+              sx={{
+                display: "grid",
+                gridTemplateColumns: "90px 90px 1fr 44px",
+                gap: 1,
+                alignItems: "center",
+                px: 1,
+                py: 0.5,
+              }}
+              key={index}
+            >
+              <Box
+                sx={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 0.75,
+                  minWidth: 0,
+                }}
+              >
+                <TerminalIcon fontSize="small" />
+                <Typography variant="body2" noWrap>
+                  {process.pid}
+                </Typography>
+              </Box>
+              <Box
+                sx={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 0.75,
+                  minWidth: 0,
+                }}
+              >
+                <WebIcon fontSize="small" />
+                <Typography variant="body2" noWrap>
+                  {process.port}
+                </Typography>
+              </Box>
+              <Box
+                sx={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 0.75,
+                  minWidth: 0,
+                }}
+              >
+                <ElectricalServicesIcon fontSize="small" />
+                <Typography variant="body2" noWrap title={process.command}>
+                  {process.command.length > 20
+                    ? `...${process.command.substring(
+                        process.command.length - 20
+                      )}`
+                    : process.command}
+                </Typography>
+              </Box>
+              <Box
+                sx={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 0.75,
+                  justifyContent: "flex-end",
+                }}
+              >
+                <IconButton size="small">
+                  <DangerousIcon fontSize="small" />
+                </IconButton>
+              </Box>
+            </ListItem>
+          ))}
       </List>
-      <pre>
-        <code>{JSON.stringify(greeting, null, 2)}</code>
-      </pre>
     </div>
   );
 }

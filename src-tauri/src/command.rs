@@ -54,7 +54,7 @@ fn split_pid_command(line: &str) -> Option<(u32, &str)> {
 }
 
 #[tauri::command]
-pub fn greet() -> Result<Vec<ProcessInfo>, String> {
+pub fn get_running_ports() -> Result<Vec<ProcessInfo>, String> {
      use std::str;
     let output = match Command::new("lsof")
         .args([

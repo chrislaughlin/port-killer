@@ -12,7 +12,7 @@ fn main() {
         .invoke_handler(tauri::generate_handler![
             command::init,
             command::show_menubar_panel,
-            command::greet
+            command::get_running_ports
         ])
         .plugin(tauri_nspanel::init())
         .setup(|app| {
