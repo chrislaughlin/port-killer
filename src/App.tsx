@@ -3,31 +3,82 @@ import { invoke } from "@tauri-apps/api/core";
 
 import "./App.css";
 
+import mockInvokes from './mockInvokes';
+import { Button, List, ListItem } from '@mui/material';
+
+export interface ProcessInfo {
+  pid: number;
+  port: number;
+  command: string;
+}
+
+function invokeWrapper<T>(name: string): Promise<T> {
+  if (window.__TAURI_INTERNALS__ !== undefined) {
+    return invoke(name);
+  } else {
+    return mockInvokes[name as keyof typeof mockInvokes]() as Promise<T>;
+  }
+}
+
 function App() {
-  const [greeting, setGreeting] = useState("");
+  const [greeting, setGreeting] = useState<ProcessInfo[]>([]);
+  const [openedDataTime, setOpenedDataTime] = useState<number | null>(null);
+  const [visibleLog, setVisibleLog] = useState<boolean[]>([]);
 
   useEffect(() => {
-    invoke("init");
+    const handle = () => {
+      setOpenedDataTime(new Date().getTime());
+    };
+    handle();
+    return () => {
+      handle();
+    };
   }, []);
 
-  // useEffect(() => {
-  //   async function fetchGreeting() {
-  //     const response = await invoke("greet", { name: "Chris" });
-  //     setGreeting(response as string);
-  //   }
-  //   fetchGreeting();
-  // }, []);
+  useEffect(() => {
+    invokeWrapper("init");
+  }, []);
+
+  useEffect(() => {
+    const onVisibilityChange = () => {
+      setVisibleLog((prev) => [...prev, !document.hidden]);
+    };
+    document.addEventListener("visibilitychange", onVisibilityChange);
+    return () => {
+      document.removeEventListener("visibilitychange", onVisibilityChange);
+    };
+  }, [])
 
   async function fetchGreeting() {
-    const response = await invoke("greet", { name: "Chris" });
-    setGreeting(response as string);
+    const response:ProcessInfo[] = await invokeWrapper("greet");
+    setGreeting(response);
   }
 
   return (
     <div className="container">
       <h1>Menubar App</h1>
-      <button onClick={fetchGreeting}>Greet</button>
-      <p>{greeting}</p>
+      <span>Width: {window.outerWidth}</span>
+      <br />
+      <span>Height: {window.outerHeight}</span>
+      <br />
+      {/* <ul>
+        {visibleLog.map((visible, index) => (
+          <li key={index}>
+            {visible ? "visible" : "hidden"}
+          </li>
+        ))}
+      </ul> */}
+      <Button variant="contained" onClick={fetchGreeting}>Greet</Button>
+      <List>
+        {greeting.map((process, index) => (
+          <ListItem key={index}>
+            PID: {process.pid}, Port: {process.port}, Command: {process.command}
+          </ListItem>
+        ))}
+      </List>
+      <pre>
+        <code>{JSON.stringify(greeting, null, 2)}</code>
+      </pre>
     </div>
   );
 }
