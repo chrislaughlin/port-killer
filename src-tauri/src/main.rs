@@ -12,9 +12,11 @@ fn main() {
         .invoke_handler(tauri::generate_handler![
             command::init,
             command::show_menubar_panel,
-            command::get_running_ports
+            command::get_running_ports,
+            command::kill_port
         ])
         .plugin(tauri_nspanel::init())
+        .plugin(tauri_plugin_opener::init())
         .setup(|app| {
             app.set_activation_policy(tauri::ActivationPolicy::Accessory);
 

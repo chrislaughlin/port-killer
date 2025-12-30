@@ -2,42 +2,51 @@
 import { createTheme, alpha } from "@mui/material/styles";
 
 const accent = {
-  main: "#7C3AED", // violet 600-ish
+  main: "#7C3AED", // violet
   light: "#A78BFA",
   dark: "#5B21B6",
 };
 
+const danger = {
+  main: "#EF4444",
+};
+
 const base = {
-  bg: "#0B0F14",        // app background
-  paper: "#0F172A",     // surfaces/cards
-  paper2: "#111827",    // slightly lighter surface
-  border: "#1F2937",    // borders/dividers
-  text: "#E5E7EB",      // primary text
-  textMuted: "#9CA3AF", // secondary text
+  // tuned for more depth + separation
+  bg: "#0A0F14",         // deeper background
+  paper: "#0F172A",      // main surface
+  paper2: "#111B31",     // slightly lifted surface
+  border: "#273244",     // brighter than before (premium feel)
+  text: "#E5E7EB",
+  textMuted: "#9CA3AF",
 };
 
 export const theme = createTheme({
   palette: {
     mode: "dark",
     primary: accent,
-    secondary: { main: "#22C55E" }, // optional success-y secondary
+    secondary: { main: "#22C55E" },
+
     background: {
       default: base.bg,
       paper: base.paper,
     },
+
     text: {
       primary: base.text,
       secondary: base.textMuted,
     },
-    divider: base.border,
-    error: { main: "#EF4444" },
+
+    divider: alpha(base.border, 0.9),
+
+    error: danger,
     warning: { main: "#F59E0B" },
     info: { main: "#38BDF8" },
     success: { main: "#22C55E" },
   },
 
   shape: {
-    borderRadius: 12, // modern, slightly rounded like shadcn
+    borderRadius: 12,
   },
 
   typography: {
@@ -53,6 +62,8 @@ export const theme = createTheme({
       "Segoe UI Emoji",
     ].join(","),
     h6: { fontWeight: 650, letterSpacing: -0.2 },
+    body1: { letterSpacing: -0.1 },
+    body2: { letterSpacing: -0.1 },
     button: { textTransform: "none", fontWeight: 600 },
   },
 
@@ -61,19 +72,21 @@ export const theme = createTheme({
     "0px 1px 2px rgba(0,0,0,0.35)",
     "0px 2px 6px rgba(0,0,0,0.35)",
     "0px 4px 14px rgba(0,0,0,0.35)",
-    ...Array(21).fill("0px 8px 30px rgba(0,0,0,0.35)"),
+    ...Array(21).fill("0px 12px 40px rgba(0,0,0,0.45)"),
   ] as any,
 
   components: {
     MuiCssBaseline: {
       styleOverrides: {
-        ":root": {
-          colorScheme: "dark",
-        },
+        ":root": { colorScheme: "dark" },
+        html: { height: "100%" },
         body: {
+          height: "100%",
           backgroundColor: base.bg,
         },
-        // subtle scrollbars for the popover window
+        "#root": { height: "100%" },
+
+        // subtle scrollbars (popover-friendly)
         "*::-webkit-scrollbar": { width: 10, height: 10 },
         "*::-webkit-scrollbar-thumb": {
           backgroundColor: alpha("#FFFFFF", 0.14),
@@ -81,7 +94,7 @@ export const theme = createTheme({
           border: `3px solid ${base.bg}`,
         },
         "*::-webkit-scrollbar-thumb:hover": {
-          backgroundColor: alpha("#FFFFFF", 0.2),
+          backgroundColor: alpha("#FFFFFF", 0.22),
         },
       },
     },
@@ -90,7 +103,7 @@ export const theme = createTheme({
       styleOverrides: {
         root: {
           backgroundImage: "none",
-          border: `1px solid ${alpha(base.border, 0.9)}`,
+          border: `1px solid ${alpha(base.border, 0.95)}`,
         },
       },
     },
@@ -99,8 +112,9 @@ export const theme = createTheme({
       styleOverrides: {
         root: {
           backgroundImage: "none",
-          border: `1px solid ${alpha(base.border, 0.9)}`,
-          boxShadow: "0px 8px 30px rgba(0,0,0,0.35)",
+          backgroundColor: base.paper2,
+          border: `1px solid ${alpha(base.border, 0.95)}`,
+          boxShadow: "0px 12px 40px rgba(0,0,0,0.45)",
         },
       },
     },
@@ -109,9 +123,21 @@ export const theme = createTheme({
       styleOverrides: {
         root: {
           backgroundImage: "none",
-          backgroundColor: base.paper,
-          borderBottom: `1px solid ${alpha(base.border, 0.9)}`,
+          backgroundColor: alpha(base.paper, 0.88),
+          // uncomment for "glass" (looks great in popovers)
+          backdropFilter: "blur(16px)",
+          border: 'none',
           boxShadow: "none",
+        },
+      },
+    },
+
+    MuiToolbar: {
+      styleOverrides: {
+        root: {
+          minHeight: 44,
+          paddingLeft: 12,
+          paddingRight: 12,
         },
       },
     },
@@ -141,8 +167,16 @@ export const theme = createTheme({
       styleOverrides: {
         root: {
           borderRadius: 10,
+          transition: "background-color 120ms ease, color 120ms ease",
           "&:hover": {
             backgroundColor: alpha("#FFFFFF", 0.06),
+          },
+          // You can apply className="danger" to kill buttons for consistent styling
+          "&.danger:hover": {
+            backgroundColor: alpha(danger.main, 0.14),
+          },
+          "&.danger:hover svg": {
+            color: danger.main,
           },
         },
       },
@@ -157,13 +191,13 @@ export const theme = createTheme({
         root: {
           borderRadius: 10,
           backgroundColor: alpha("#FFFFFF", 0.03),
-          border: `1px solid ${alpha(base.border, 0.9)}`,
+          border: `1px solid ${alpha(base.border, 0.95)}`,
           transition: "border-color 120ms ease, box-shadow 120ms ease",
           "&:hover": {
             borderColor: alpha("#FFFFFF", 0.18),
           },
           "&.Mui-focused": {
-            borderColor: alpha(accent.main, 0.7),
+            borderColor: alpha(accent.main, 0.75),
             boxShadow: `0 0 0 3px ${alpha(accent.main, 0.18)}`,
           },
         },
@@ -176,7 +210,7 @@ export const theme = createTheme({
 
     MuiOutlinedInput: {
       styleOverrides: {
-        notchedOutline: { border: "none" }, // we’re handling border on root
+        notchedOutline: { border: "none" },
       },
     },
 
@@ -193,7 +227,7 @@ export const theme = createTheme({
         tooltip: {
           backgroundColor: alpha("#0B0F14", 0.95),
           border: `1px solid ${alpha("#FFFFFF", 0.12)}`,
-          boxShadow: "0px 12px 30px rgba(0,0,0,0.45)",
+          boxShadow: "0px 16px 44px rgba(0,0,0,0.55)",
           borderRadius: 10,
           padding: "8px 10px",
         },
@@ -205,8 +239,16 @@ export const theme = createTheme({
         paper: {
           backgroundImage: "none",
           backgroundColor: base.paper,
-          border: `1px solid ${alpha(base.border, 0.9)}`,
+          border: `1px solid ${alpha(base.border, 0.95)}`,
           borderRadius: 12,
+        },
+      },
+    },
+
+    MuiList: {
+      styleOverrides: {
+        root: {
+          padding: 12,
         },
       },
     },
@@ -214,12 +256,23 @@ export const theme = createTheme({
     MuiListItemButton: {
       styleOverrides: {
         root: {
-          borderRadius: 10,
-          "&.Mui-selected": {
-            backgroundColor: alpha(accent.main, 0.16),
-            "&:hover": { backgroundColor: alpha(accent.main, 0.22) },
+          borderRadius: 12,
+          border: `1px solid transparent`,
+          transition:
+            "background-color 120ms ease, border-color 120ms ease, transform 120ms ease",
+          "&:hover": {
+            backgroundColor: alpha("#FFFFFF", 0.05),
+            borderColor: alpha(base.border, 0.7),
+            transform: "translateY(-1px)",
           },
-          "&:hover": { backgroundColor: alpha("#FFFFFF", 0.06) },
+          "&.Mui-selected": {
+            backgroundColor: alpha(accent.main, 0.14),
+            borderColor: alpha(accent.main, 0.35),
+            "&:hover": {
+              backgroundColor: alpha(accent.main, 0.18),
+              borderColor: alpha(accent.main, 0.45),
+            },
+          },
         },
       },
     },
@@ -230,6 +283,45 @@ export const theme = createTheme({
           borderRadius: 999,
           backgroundColor: alpha("#FFFFFF", 0.06),
           border: `1px solid ${alpha("#FFFFFF", 0.12)}`,
+          fontWeight: 600,
+        },
+        outlined: {
+          backgroundColor: "transparent",
+          borderColor: alpha("#FFFFFF", 0.14),
+        },
+        label: {
+          paddingLeft: 10,
+          paddingRight: 10,
+        },
+      },
+    },
+
+    MuiTypography: {
+      styleOverrides: {
+        root: {
+          // helps text look a touch crisper in compact UIs
+          textRendering: "optimizeLegibility",
+        },
+      },
+    },
+
+    MuiDialog: {
+      styleOverrides: {
+        paper: {
+          borderRadius: 16,
+          border: `1px solid ${alpha(base.border, 0.95)}`,
+          backgroundImage: "none",
+        },
+      },
+    },
+
+    MuiSnackbarContent: {
+      styleOverrides: {
+        root: {
+          borderRadius: 12,
+          border: `1px solid ${alpha(base.border, 0.95)}`,
+          backgroundImage: "none",
+          backgroundColor: base.paper2,
         },
       },
     },

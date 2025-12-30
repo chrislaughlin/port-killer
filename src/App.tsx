@@ -1,14 +1,22 @@
-import { use, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { invoke } from "@tauri-apps/api/core";
 
 import "./App.css";
 
 import mockInvokes from "./mockInvokes";
-import { Box, IconButton, List, ListItem, Typography } from "@mui/material";
-import TerminalIcon from "@mui/icons-material/Terminal";
-import WebIcon from "@mui/icons-material/Web";
-import ElectricalServicesIcon from "@mui/icons-material/ElectricalServices";
-import DangerousIcon from "@mui/icons-material/Dangerous";
+import {
+  Box,
+  Chip,
+  IconButton,
+  List,
+  ListItemButton,
+  Stack,
+  Tooltip,
+  Typography,
+} from "@mui/material";
+import AppHeader from "./AppHeader";
+import { KillButton } from "./killButton";
+import { openUrl } from "@tauri-apps/plugin-opener";
 
 export interface ProcessInfo {
   pid: number;
@@ -16,9 +24,9 @@ export interface ProcessInfo {
   command: string;
 }
 
-function invokeWrapper<T>(name: string): Promise<T> {
+function invokeWrapper<T>(name: string, args?: any): Promise<T> {
   if (window.__TAURI_INTERNALS__ !== undefined) {
-    return invoke(name);
+    return invoke(name, args) as Promise<T>;
   } else {
     return mockInvokes[name as keyof typeof mockInvokes]() as Promise<T>;
   }
@@ -26,6 +34,9 @@ function invokeWrapper<T>(name: string): Promise<T> {
 
 function App() {
   const [runningPorts, setRunningPorts] = useState<ProcessInfo[]>([]);
+  const [appState, setAppState] = useState<"loading" | "ready" | "killing">(
+    "loading"
+  );
 
   useEffect(() => {
     invokeWrapper("init");
@@ -45,13 +56,15 @@ function App() {
   }, []);
 
   async function fetchRunningPorts() {
+    setAppState("loading");
     const response: ProcessInfo[] = await invokeWrapper("get_running_ports");
     setRunningPorts(response);
+    setAppState("ready");
   }
 
   return (
-    <div className="container">
-      <h2>Process Killer</h2>
+    <Box className="container" component="div" sx={{ background: "#0F172A" }}>
+      <AppHeader appState={appState} />
       <List
         disablePadding
         sx={{
@@ -63,77 +76,62 @@ function App() {
       >
         {runningPorts
           .sort((a, b) => a.port - b.port)
-          .map((process, index) => (
-            <ListItem
-              sx={{
-                display: "grid",
-                gridTemplateColumns: "90px 90px 1fr 44px",
-                gap: 1,
-                alignItems: "center",
-                px: 1,
-                py: 0.5,
-              }}
-              key={index}
+          .map(({ pid, port, command }, index) => (
+            <ListItemButton
+              key={`${pid}-${port}-${index}`}
+              sx={{ borderRadius: 2, mb: 0.75, alignItems: "flex-start" }}
             >
-              <Box
-                sx={{
-                  display: "flex",
-                  alignItems: "center",
-                  gap: 0.75,
-                  minWidth: 0,
-                }}
-              >
-                <TerminalIcon fontSize="small" />
-                <Typography variant="body2" noWrap>
-                  {process.pid}
-                </Typography>
-              </Box>
-              <Box
-                sx={{
-                  display: "flex",
-                  alignItems: "center",
-                  gap: 0.75,
-                  minWidth: 0,
-                }}
-              >
-                <WebIcon fontSize="small" />
-                <Typography variant="body2" noWrap>
-                  {process.port}
-                </Typography>
-              </Box>
-              <Box
-                sx={{
-                  display: "flex",
-                  alignItems: "center",
-                  gap: 0.75,
-                  minWidth: 0,
-                }}
-              >
-                <ElectricalServicesIcon fontSize="small" />
-                <Typography variant="body2" noWrap title={process.command}>
-                  {process.command.length > 20
-                    ? `...${process.command.substring(
-                        process.command.length - 20
-                      )}`
-                    : process.command}
-                </Typography>
-              </Box>
-              <Box
-                sx={{
-                  display: "flex",
-                  alignItems: "center",
-                  gap: 0.75,
-                  justifyContent: "flex-end",
-                }}
-              >
-                <IconButton size="small">
-                  <DangerousIcon fontSize="small" />
-                </IconButton>
-              </Box>
-            </ListItem>
+              <Stack direction="row" spacing={1.25} sx={{ width: "100%" }}>
+                <Stack spacing={0.25} sx={{ flex: 1, minWidth: 0 }}>
+                  <Stack
+                    direction="row"
+                    spacing={1}
+                    alignItems="center"
+                    sx={{ minWidth: 0 }}
+                  >
+                    <Chip
+                      size="small"
+                      variant="outlined"
+                      label={`Port ${port}`}
+                      onClick={() => {
+                        void openUrl(`http://localhost:${port}`);
+                      }}
+                    />
+                    <Typography fontWeight={650} noWrap sx={{ minWidth: 0 }}>
+                      Process Id: {pid}
+                    </Typography>
+                  </Stack>
+
+                  <Typography variant="body2" color="text.secondary" noWrap>
+                    {command.length > 30
+                      ? `...${command.substring(command.length - 30)}`
+                      : command}
+                  </Typography>
+                </Stack>
+
+                <Tooltip title="Kill process">
+                  <IconButton
+                    size="small"
+                    sx={{
+                      mt: 0.25,
+                      bgcolor: "rgba(239, 68, 68, 0.14)",
+                      color: "#EF4444",
+                    }}
+                  >
+                    <KillButton
+                      onKill={async () => {
+                        setAppState("killing");
+                        await invokeWrapper("kill_port", { portNumber: port });
+                        await fetchRunningPorts();
+                      }}
+                    />
+                  </IconButton>
+                </Tooltip>
+              </Stack>
+            </ListItemButton>
           ))}
       </List>
-    </div>
+    </Box>
   );
 }
 
