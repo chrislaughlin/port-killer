@@ -16,7 +16,7 @@
       "icons/icon.ico"
     ]
   },
-  "productName": "tauri-macos-menubar-app-example",
+  "productName": "Process Killer",
   "version": "0.2.0",
   "identifier": "com.example.dev",
   "plugins": {},

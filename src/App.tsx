@@ -25,6 +25,7 @@ export interface ProcessInfo {
 }
 
 function invokeWrapper<T>(name: string, args?: any): Promise<T> {
+  // @ts-ignore
   if (window.__TAURI_INTERNALS__ !== undefined) {
     return invoke(name, args) as Promise<T>;
   } else {
@@ -37,6 +38,7 @@ function App() {
   const [appState, setAppState] = useState<"loading" | "ready" | "killing">(
     "loading"
   );
+  const [searchTerm, setSearchTerm] = useState<string>("");
 
   useEffect(() => {
     invokeWrapper("init");
@@ -64,7 +66,11 @@ function App() {
 
   return (
     <Box className="container" component="div" sx={{ background: "#0F172A" }}>
-      <AppHeader appState={appState} />
+      <AppHeader
+        appState={appState}
+        searchTerm={searchTerm}
+        setSearchTerm={setSearchTerm}
+      />
       <List
         disablePadding
         sx={{
@@ -75,6 +81,11 @@ function App() {
         }}
       >
         {runningPorts
+          .filter(({ pid, port, command }) =>
+            `${pid} ${port} ${command}`
+              .toLowerCase()
+              .includes(searchTerm.toLowerCase())
+          )
           .sort((a, b) => a.port - b.port)
           .map(({ pid, port, command }, index) => (
             <ListItemButton
@@ -102,7 +113,7 @@ function App() {
                     </Typography>
                   </Stack>
 
-                  <Typography variant="body2" color="text.secondary" noWrap>
+                  <Typography variant="body2" color="text.secondary" noWrap title={command}>
                     {command.length > 30
                       ? `...${command.substring(command.length - 30)}`
                       : command}
