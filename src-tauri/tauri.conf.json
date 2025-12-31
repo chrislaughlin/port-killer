@@ -16,7 +16,7 @@
       "icons/icon.ico"
     ]
   },
-  "productName": "tauri-macos-menubar-app-example",
+  "productName": "Process Killer",
   "version": "0.2.0",
   "identifier": "com.example.dev",
   "plugins": {},
@@ -26,8 +26,8 @@
         "fullscreen": false,
         "resizable": false,
         "title": "menubar",
-        "width": 350,
-        "height": 400,
+        "width": 500,
+        "minHeight": 400,
         "decorations": false,
         "transparent": true,
         "visible": false
