@@ -1,5 +1,7 @@
 # Process Killer (macOS menubar, Tauri v2)
 
+![Gif recording of the process killer application in us .](demo.gif)
+
 macOS menubar popover built with Tauri v2 + React. It lists every listening TCP port on your machine, shows the owning PID/command, lets you open the port in a browser, and can immediately kill any process bound to a port. The UI is styled with MUI and runs inside a non-activating NSPanel via `tauri-nspanel`.
 
 ## Features
