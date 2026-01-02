@@ -16,7 +16,7 @@
       "icons/icon.ico"
     ]
   },
-  "productName": "Process Killer",
+  "productName": "Port Killer",
   "version": "0.2.0",
   "identifier": "com.example.dev",
   "plugins": {},

@@ -29,7 +29,7 @@ export default function AppHeader({
           fontWeight={600}
           sx={{ letterSpacing: -0.2 }}
         >
-          Process Killer{" "}
+          Port Killer{" "}
           {appState === "loading" ? "⏳" : appState === "killing" ? "💥" : ""}
         </Typography>
       </Toolbar>

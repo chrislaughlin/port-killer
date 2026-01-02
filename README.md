@@ -1,4 +1,4 @@
-# Process Killer (macOS menubar, Tauri v2)
+# Port Killer (macOS menubar, Tauri v2)
 
 ![Gif recording of the process killer application in us .](demo.gif)
 

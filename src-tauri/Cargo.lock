@@ -2800,6 +2800,20 @@ dependencies = [
 ]
 
 [[package]]
+name = "port-killer"
+version = "0.0.0"
+dependencies = [
+ "monitor",
+ "serde",
+ "serde_json",
+ "tauri",
+ "tauri-build",
+ "tauri-nspanel",
+ "tauri-plugin-opener",
+ "tauri-plugin-shell",
+]
+
+[[package]]
 name = "potential_utf"
 version = "0.1.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -3791,20 +3805,6 @@ dependencies = [
  "url",
  "uuid",
  "walkdir",
-]
-
-[[package]]
-name = "tauri-macos-menubar-app-example"
-version = "0.0.0"
-dependencies = [
- "monitor",
- "serde",
- "serde_json",
- "tauri",
- "tauri-build",
- "tauri-nspanel",
- "tauri-plugin-opener",
- "tauri-plugin-shell",
 ]
 
 [[package]]
