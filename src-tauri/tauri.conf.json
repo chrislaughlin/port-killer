@@ -24,7 +24,7 @@
     ]
   },
   "productName": "Port Killer",
-  "version": "0.2.4",
+  "version": "0.2.5",
   "identifier": "com.chrislaughlin.port-killer",
   "plugins": {},
   "app": {
