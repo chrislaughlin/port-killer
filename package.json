@@ -6,6 +6,7 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",
+    "notarize:macos": "./scripts/notarize-macos-artifact.sh",
     "preview": "vite preview",
     "tauri": "tauri"
   },
